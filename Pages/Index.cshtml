@@ -1,0 +1,65 @@
+﻿@page
+@using xSite
+@model PaginatedModel<PostInfo>
+@inject ISiteManager _siteManager
+
+@{
+    var siteInfo = await _siteManager.GetSiteInfoAsync();
+    ViewData["Title"] = siteInfo.Title;
+    ViewData["Description"] = siteInfo.Description;
+    ViewData["Author"] = siteInfo.Author;
+    ViewData["SiteInfo"] = siteInfo;
+}
+
+<header class="masthead">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="page-heading">
+                    <h1>@siteInfo.Title</h1>
+                    @if (!string.IsNullOrEmpty(siteInfo.Description)) {
+                        <span class="subheading">@siteInfo.Description</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+            @foreach (var post in Model.Items) {
+                var postUrl = _siteManager.GetUrl(post);
+                <article class="post-preview">
+                    <a href="@postUrl" aria-label="Continue reading @post.Title">
+                        <h2 class="post-title">@post.Title</h2>
+                        <h3 class="post-subtitle">@post.Excerpt</h3>
+                    </a>
+                    <p class="post-meta">
+                        Posted by
+                        <a href="#">@post.Author.Name</a>
+                        on
+                        <time>@post.PublishedOn.Value.ToString("MMMM d, yyyy")</time>
+                        @*&middot; x Mins*@
+                    </p>
+                </article>
+
+                <hr>
+            }
+
+            <!-- Pager -->
+            <div class="clearfix">
+                @if (Model.ShowPrevious) {
+                    <a class="btn btn-primary float-left" href="@Model.GetPreviousPageUrl()">&larr; Previous</a>
+                }
+                @if (Model.ShowNext) {
+                    <a class="btn btn-primary float-right" href="@Model.GetNextPageUrl()">Next &rarr;</a>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+﻿@page
+@using xSite
+@model xSiteModel<Post>
+@inject ISiteManager _siteManager
+
+@{
+    var siteInfo = await _siteManager.GetSiteInfoAsync();
+    ViewData["Title"] = Model.Item.Title + " - " + siteInfo.Title;
+    ViewData["Description"] = Model.Item.Excerpt;
+    ViewData["Author"] = Model.Item.Author.Name;
+    ViewData["SiteInfo"] = siteInfo;
+}
+
+@if (@Model.Item.FeaturedMedia != null) {
+    var mediaUrl = Model.Item.FeaturedMedia.LibraryFilePath;
+    @:<header class="masthead" style="background-image: url('@mediaUrl')">
+} else {
+    @:<header class="masthead">
+}
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">
+                        <h1>@Model.Item.Title</h1>
+                        @if (string.IsNullOrWhiteSpace(Model.Item.Excerpt)) {
+                            <h2 class="subheading">@Model.Item.Excerpt</h2>
+                        }
+                        <span class="meta">
+                            Posted by
+                            <a href="#">@Model.Item.Author.Name</a>
+                            on <time>@Model.Item.PublishedOn.Value.ToString("MMMM d, yyyy")</time> @*&middot; x Mins*@
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+            @Html.Raw(@Model.Item.Body)
+
+            @*<hr>*@
+        </div>
+    </div>
+</div>
